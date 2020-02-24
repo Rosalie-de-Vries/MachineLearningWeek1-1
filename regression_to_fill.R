@@ -13,6 +13,7 @@ library(raster)
 library(FNN) #library for KNN
 library(ggplot2) #library for plotting
 
+
 #clear env
 rm(list=ls())
 
