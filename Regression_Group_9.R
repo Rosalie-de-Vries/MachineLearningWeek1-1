@@ -1,5 +1,8 @@
-# Group 9?
-# Bursa and Rosalie
+# Machine Learning 2020
+# Regression Project
+# 21/02/2020
+# Group 9
+# Rosalie, Busra
 
 #MAE gives equal weight to all errors, while RMSE gives extra weight to large errors
 
