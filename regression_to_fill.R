@@ -2,6 +2,8 @@ library(raster)
 library(FNN) #library for KNN
 library(ggplot2) #library for plotting
 
+kjhdjdjdvjdbvjadbvjadbjvbadjv
+
 #clear env
 rm(list=ls())
 
