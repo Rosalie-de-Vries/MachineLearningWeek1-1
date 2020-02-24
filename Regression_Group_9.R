@@ -81,8 +81,8 @@ rsq_test <- 1- rss_test/tss_test
 
 ###normalize data###
 data_norm <- data
-#data_norm[,4:65] <- data_norm[,4:65]/data_norm[,57]  # 57 is the 54th band
-data_norm[,4:65] <- (data_norm[,4:65] - mean(data_norm[,57])) / sd(data_norm[,57])
+data_norm[,4:65] <- data_norm[,4:65]/max(data_norm[,57])  # 57 is the 54th band
+#data_norm[,4:65] <- (data_norm[,4:65] - mean(data_norm[,57])) / sd(data_norm[,57])
 
 ###Show spectral values after normalization###
 graphics.off()
@@ -183,7 +183,7 @@ plotRGB(raster_img/maxs*255, r=3,g=13,b=23, main='Input image')
 img <- as.data.frame(raster_img, xy=TRUE)
 colnames(img) <- c("x", "y", paste("Wavelength", wavelengths[1,4:ncol(wavelengths)], sep = "_"))
 #Normalize
-img[,3:64] <- (img[,3:64] - mean(img$Wavelength_879.54)) / sd(img$Wavelength_879.54)
+img[,3:64] <- img[,3:64]  / max(img$Wavelength_879.54)
 img1 <- img[,-c(1:2)]
 colnames(img1) <-  colnames(train_samples_norm)[2:63]
 #Predict
@@ -200,7 +200,7 @@ plot(img_lm, axes=FALSE, main='Linear regression', asp=1)
 mat_img <- raster::as.matrix(raster_img)
 mat_img <- as.data.frame(raster_img, xy=TRUE)
 #Normalize
-mat_img[,] <- (img[,3:64] - mean(img$Wavelength_879.54)) / sd(img$Wavelength_879.54)
+mat_img[,] <- img[,4:64]  / max(img$Wavelength_879.54)
 #Give meaningful names to the column
 colnames(mat_img) <- colnames(train_samples_norm)[2:62]
 
