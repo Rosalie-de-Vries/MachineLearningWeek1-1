@@ -4,8 +4,6 @@
 # Group 9
 # Rosalie, Busra
 
-#MAE gives equal weight to all errors, while RMSE gives extra weight to large errors
-
 # download packages if needed
 if (!require('raster')) install.packages('raster')
 if (!require('FNN')) install.packages('FNN')
@@ -31,11 +29,12 @@ data <- data[2:nrow(data),]
 #put the right name for the rows
 rownames(data) <- c(paste("Sample", seq_len(nrow(data)), sep = "_"))
 #and for the columns
-colnames(data) <- c("Chlorophyll", "Leaf Area Index", "FCover", paste("Hyperbands", seq(1:62), sep="_"))
+colnames(data) <- c("Chlorophyll", "LAI", "FCover", paste("Hyperbands", seq(1:62), sep="_"))
 
 ###Visualization histogram of chlorophyll###
 graphics.off()
-hist(data[,1], xlab="Spectral Bands", ylab="Frequency", main="Histogram of Chlorophyll", col="green")
+#Use hist() function
+hist(data[,1], xlab="Chlorophyl content", ylab="Number of sample points", main="Histogram of Chlorophyll", col="darkgreen")
 
 ###Show spectral values (unormalized)###
 graphics.off()
@@ -51,8 +50,9 @@ ggplot(data=spectral_val, aes(x=Wavelengths, y=Val, color=ID, shape=ID)) + geom_
 ###perform train/test split###
 set.seed(1)
 split <- runif(nrow(data),0,1)>0.2
-train_samples <- subset(data, select = -c(`Leaf Area Index`, FCover), split)
-test_samples <- subset(data, select= -c(`Leaf Area Index`, FCover), !split)
+train_samples <- subset(data, select = -c(LAI, FCover), split)
+test_samples <- subset(data, select= -c(LAI, FCover), !split)
+
 # train_ground_truth <- 
 # test_ground_truth <- 
 
@@ -60,49 +60,52 @@ test_samples <- subset(data, select= -c(`Leaf Area Index`, FCover), !split)
 ###Apply linear model###
 #attach(data)
 set.seed(1)
-linear_reg <- lm(train_samples$Chlorophyll~.-train_samples$Chlorophyll, data=train_samples)
+linear_reg <- lm(train_samples$Chlorophyll~., data=train_samples); summary(linear_reg)
 pred_test <- predict(linear_reg, test_samples)
 
 # calculate RMSE 
-RMSE_linear <- function(error){ sqrt(mean(error^2)) }
-RMSE_training <- RMSE_linear(linear_reg$residuals)
-RMSE_test <- RMSE_linear(pred_test - test_samples$Chlorophyll)
+RMSE_linear_test <- sqrt(sum((test_samples$Chlorophyll-pred_test)^2)/length(pred_test))
+RMSE_linear_test
 # calculate MAE
-MAE_linear <- function(error){ mean(abs(error))}
-MAE_training <- MAE_linear(linear_reg$residuals)
-MAE_test <- MAE_linear(pred_test - test_samples$Chlorophyll)
+MAE_linear_test <- mean(abs(test_samples$Chlorophyll-pred_test), na.rm = T)
+MAE_linear_test 
 # calculate rsq
-rss_training <- sum((linear_reg$residuals)^2)
-tss_training <- sum((train_samples$Chlorophyll - mean(train_samples$Chlorophyll))^2)
-rsq_training <- 1- rss_training/tss_training
-rss_test <- sum((pred_test - test_samples$Chlorophyll)^2)
+rss_test <- sum((test_samples$Chlorophyll-pred_test)^2)
 tss_test <- sum((test_samples$Chlorophyll - mean(test_samples$Chlorophyll))^2)
-rsq_test <- 1- rss_test/tss_test
+rsq_test <- 1- (rss_test/tss_test)
+rsq_test
+
+# MAE gives equal weight to all errors, while RMSE gives extra weight to large errors
+# These values are RMSE: 5.858875, MAE: 4.825098, R2: 0.8243799. They are really low, and the R2 is high. 
+# These values indicate that relative to the training data, the model performs quite well. It is also shown in the F-statistic
+# and p-value 18.86 and 2.2e-16 respectively. 
 
 ###normalize data###
 data_norm <- data
 data_norm[,4:65] <- data_norm[,4:65]/max(data_norm[,57])  # 57 is the 54th band
-#data_norm[,4:65] <- (data_norm[,4:65] - mean(data_norm[,57])) / sd(data_norm[,57])
+#data_norm[,4:65] <- (data_norm[,4:65]) / (data_norm[,57])
 
 ###Show spectral values after normalization###
-graphics.off()
+#graphics.off()
 sample_id = 11
 spectral_val <- data.frame(t(wavelengths[1,4:ncol(wavelengths)]), t(data_norm[sample_id,4:ncol(data_norm)]), paste("Sample",sample_id,sep = " "))
 colnames(spectral_val) <- c("Wavelengths", "Val", "ID")
-
 sample_id = 100
 spectral_val2 <- data.frame(t(wavelengths[1,4:ncol(wavelengths)]), t(data_norm[sample_id,4:ncol(data_norm)]), paste("Sample",sample_id,sep = " "))
 colnames(spectral_val2) <- c("Wavelengths", "Val", "ID")
 spectral_val <- rbind(spectral_val, spectral_val2)
 ggplot(data=spectral_val, aes(x=Wavelengths, y=Val, color=ID, shape=ID)) + geom_point() + geom_line(linetype = "dashed")
 
+# The values are now between 0-1, the pattern is the similar with the original values
 
 ###apply linear regression after normalization###
 ###perform train/test split###
-train_samples_norm <- subset(data_norm, select = -c(`Leaf Area Index`, FCover), split)
-test_samples_norm <- subset(data_norm, select = -c(`Leaf Area Index`, FCover), !split)
+set.seed(1)
+split <- runif(nrow(data),0,1)>0.2
+train_samples_norm <- subset(data_norm, select = -c(LAI, FCover), split)
+test_samples_norm <- subset(data_norm, select = -c(LAI, FCover), !split)
 ###Apply linear model###
-linear_reg_norm <- lm(train_samples_norm$Chlorophyll~.-train_samples_norm$Chlorophyll, data=train_samples_norm)
+linear_reg_norm <- lm(train_samples_norm$Chlorophyll~.-train_samples_norm$Chlorophyll, data=train_samples_norm); summary(linear_reg_norm)
 pred_test_norm <- predict(linear_reg_norm, test_samples_norm)
 
 ###Visualize linear model coeffs###
@@ -116,17 +119,21 @@ colnames(lm_scatter2) <- c("Sample_id", "GT", "Pred", "Method")
 lm_scatter <- rbind(lm_scatter, lm_scatter2)
 ggplot(data=lm_scatter, aes(x=GT, y=Pred, color=Method, shape=Method)) + geom_point() + geom_abline(slope=1, intercept = 0)
 
-# calculate test RMSE
-RMSE_test_norm <- RMSE_linear(pred_test_norm - test_samples_norm$Chlorophyll)
-# calculate test MAE
-MAE_test_norm <- MAE_linear(pred_test_norm - test_samples_norm$Chlorophyll)
+# calculate RMSE 
+RMSE_linear_test_norm <- sqrt(sum((test_samples_norm$Chlorophyll-pred_test_norm)^2)/length(pred_test_norm))
+RMSE_linear_test_norm
+# calculate MAE
+MAE_linear_test_norm <- mean(abs(test_samples_norm$Chlorophyll-pred_test_norm), na.rm = T)
+MAE_linear_test_norm 
 # calculate rsq
-rss_train_norm <- sum(linear_reg_norm$residuals^2)
-tss_train_norm <- sum((train_samples$Chlorophyll - mean(train_samples$Chlorophyll))^2)
-rsq_train_norm <- 1- rss_train_norm/tss_train_norm
-rss_test_norm <- sum((pred_test_norm - test_samples_norm$Chlorophyll)^2)
-tss_test_norm <- sum((test_samples$Chlorophyll - mean(test_samples$Chlorophyll))^2)
-rsq_test_norm <- 1- rss_test_norm/tss_test_norm
+rss_test_norm <- sum((test_samples_norm$Chlorophyll-pred_test_norm)^2)
+tss_test_norm <- sum((test_samples_norm$Chlorophyll - mean(test_samples_norm$Chlorophyll))^2)
+rsq_test_norm <- 1- (rss_test_norm/tss_test_norm)
+rsq_test_norm
+
+# The RMSE is 6.783294, MAE is 5.390811, and an R2 of 0.7645888 these values are slightly higher than before. 
+# The F-statistic is higher and P-value is the same,hence this indicates that the model is performing well. 
+# 27.06, 2.2e-1 respectively
 
 ###KNN reg###
 knn <- knn.reg(train = train_samples_norm[,2:62], test = test_samples_norm[,2:62], y = train_samples_norm[,1],  k = 12)
@@ -134,11 +141,13 @@ pred_test_knn = knn$pred
 res <- test_samples_norm[,1] - pred_test_knn
 
 RMSE_knn_normalized <- sqrt(mean(res^2))
-MAE_knn_normalized <- mean(abs(res))
-rss <- sum(res^2)
-tss <- sum((test_samples_norm[,1] - mean(test_samples_norm[,1]))^2)
-R2_knn_normalized <- 1- rss/tss
-
+RMSE_knn_normalized
+MAE_knn_normalized <- mean(abs(res), na.rm=T)
+MAE_knn_normalized
+rss_knn <- sum(res^2)
+tss_knn <- sum((test_samples_norm[,1] - mean(test_samples_norm[,1]))^2)
+R2_knn_normalized <- 1- rss_knn/tss_knn
+R2_knn_normalized
 
 ###find the best number of neighbors###
 best_RMSE <- 10000000
@@ -159,8 +168,12 @@ for (k in seq(1, 60, by=1)){
   }
 }
 
+# As a rule of thumb, setting K to the square root of the number of n can lead to better results.
+# Therefore we picked the range that would be suitable is 1:12
+# Higher K might deteriorate the flexibility of the model.
+
 ###Apply KNN with the best number of neighbors###
-knn <- knn.reg(train = train_samples_norm, test = test_samples_norm, y = train_samples_norm[,1],  k = 20)
+knn <- knn.reg(train = train_samples_norm, test = test_samples_norm, y = train_samples_norm[,1],  k = 37)
 pred_test_knn = knn$pred
 
 ###Show the scatter plot###
@@ -183,7 +196,8 @@ plotRGB(raster_img/maxs*255, r=3,g=13,b=23, main='Input image')
 img <- as.data.frame(raster_img, xy=TRUE)
 colnames(img) <- c("x", "y", paste("Wavelength", wavelengths[1,4:ncol(wavelengths)], sep = "_"))
 #Normalize
-img[,3:64] <- img[,3:64]  / max(img$Wavelength_879.54)
+img[,3:64] <- (img[,3:64]) / max(img$Wavelength_879.54)
+
 img1 <- img[,-c(1:2)]
 colnames(img1) <-  colnames(train_samples_norm)[2:63]
 #Predict
@@ -200,7 +214,7 @@ plot(img_lm, axes=FALSE, main='Linear regression', asp=1)
 mat_img <- raster::as.matrix(raster_img)
 mat_img <- as.data.frame(raster_img, xy=TRUE)
 #Normalize
-mat_img[,] <- img[,4:64]  / max(img$Wavelength_879.54)
+mat_img[,] <- (img[,3:64]) / max(img$Wavelength_879.54)
 #Give meaningful names to the column
 colnames(mat_img) <- colnames(train_samples_norm)[2:62]
 
