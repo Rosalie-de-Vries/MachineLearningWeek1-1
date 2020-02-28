@@ -33,7 +33,6 @@ colnames(data) <- c("Chlorophyll", "LAI", "FCover", paste("Hyperbands", seq(1:62
 
 ###Visualization histogram of chlorophyll###
 graphics.off()
-#?
 #Use hist() function
 hist(data[,1], xlab="Chlorophyl content", ylab="Number of sample points", main="Histogram of Chlorophyll", col="darkgreen")
 
@@ -83,7 +82,8 @@ rsq_test
 
 ###normalize data###
 data_norm <- data
-data_norm[,4:65] <- (data_norm[,4:65]) / (data_norm[,57])
+data_norm[,4:65] <- data_norm[,4:65]/max(data_norm[,57])  # 57 is the 54th band
+#data_norm[,4:65] <- (data_norm[,4:65]) / (data_norm[,57])
 
 ###Show spectral values after normalization###
 #graphics.off()
@@ -190,13 +190,14 @@ raster_img <- stack("./CHRIS.tif")
 
 maxs <- cellStats(raster_img, stat='max')
 par(mfrow=c(1,3))
-plotRGB(raster_img/maxs*255, r=52,g=23,b=3, main='Input image')
+plotRGB(raster_img/maxs*255, r=3,g=13,b=23, main='Input image')
 
 ###Apply lm###
 img <- as.data.frame(raster_img, xy=TRUE)
 colnames(img) <- c("x", "y", paste("Wavelength", wavelengths[1,4:ncol(wavelengths)], sep = "_"))
 #Normalize
 img[,3:64] <- (img[,3:64]) / max(img$Wavelength_879.54)
+
 img1 <- img[,-c(1:2)]
 colnames(img1) <-  colnames(train_samples_norm)[2:63]
 #Predict

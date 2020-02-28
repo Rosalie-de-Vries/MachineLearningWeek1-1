@@ -28,7 +28,11 @@ library(caret)                # collection of various machine learning tools. We
 
 
 # set working directory (MODIFY THE PATH FOR YOUR CASE ACCORDINGLY)
+<<<<<<< HEAD
 setwd('M:/My Documents/R/FTE_ML_ex_Classification')
+=======
+setwd('C:/Users/devri/Documents/WUR/Machine Learning/Week1/GIT/R')
+>>>>>>> 271378aca4621aab89ca1207b547a1222987f07f
 
 
 
@@ -106,9 +110,13 @@ plot(gt1,col=classColors[1:(max(unique(gt1))+1)],main="Ground Truth",axes=FALSE)
 
 # 3.1 NDVI
 calcNDVI <- function(img) {
+<<<<<<< HEAD
   ####### YOUR CODE HERE #######
   ndvi <- ...
   ##############################
+=======
+  ndvi <- (img$NIR - img$R)/(img$NIR + img$R)
+>>>>>>> 271378aca4621aab89ca1207b547a1222987f07f
   names(ndvi) <- "ndvi"       # assign standardised name to RasterLayer object
   return(ndvi)
 }
@@ -126,12 +134,16 @@ plot(ndvi1,axes=FALSE,col=colorRampPalette(c("#20442C", "#D6FFD3"))(255))   # we
 
 
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 271378aca4621aab89ca1207b547a1222987f07f
 # 3.2a Local Average
 calcLocalAverage <- function(img,KS) {
   
   # prepare empty output
   out <- brick()
+<<<<<<< HEAD
   
   ####### YOUR CODE HERE #######
   
@@ -149,6 +161,14 @@ calcLocalAverage <- function(img,KS) {
   out <- ...
   ##############################
   
+=======
+  ndims = dim(img)[3]
+  
+  for(i in 1:ndims){
+    avg <- focal(x=img[[i]], w=matrix(1,nrow =KS, ncol =KS), fun = mean, na.rm = TRUE, pad = TRUE)
+    out <- stack(list(out, avg))
+  }
+>>>>>>> 271378aca4621aab89ca1207b547a1222987f07f
   # assign names
   names(out) <- sprintf("locAvg_%s_%s",KS,names(img))
   
