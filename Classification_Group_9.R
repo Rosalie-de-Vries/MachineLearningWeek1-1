@@ -28,11 +28,7 @@ library(caret)                # collection of various machine learning tools. We
 
 
 # set working directory (MODIFY THE PATH FOR YOUR CASE ACCORDINGLY)
-<<<<<<< HEAD
-setwd('M:/My Documents/R/FTE_ML_ex_Classification')
-=======
-setwd('C:/Users/devri/Documents/WUR/Machine Learning/Week1/GIT/R')
->>>>>>> 271378aca4621aab89ca1207b547a1222987f07f
+setwd("C:/WUR/Machine Learning/Project for MGI/Week 1/MachineLearningWeek1-1/R")
 
 
 
@@ -110,13 +106,9 @@ plot(gt1,col=classColors[1:(max(unique(gt1))+1)],main="Ground Truth",axes=FALSE)
 
 # 3.1 NDVI
 calcNDVI <- function(img) {
-<<<<<<< HEAD
-  ####### YOUR CODE HERE #######
-  ndvi <- ...
-  ##############################
-=======
+  
   ndvi <- (img$NIR - img$R)/(img$NIR + img$R)
->>>>>>> 271378aca4621aab89ca1207b547a1222987f07f
+
   names(ndvi) <- "ndvi"       # assign standardised name to RasterLayer object
   return(ndvi)
 }
@@ -133,42 +125,19 @@ graphics.off()               # clear current plots
 plot(ndvi1,axes=FALSE,col=colorRampPalette(c("#20442C", "#D6FFD3"))(255))   # we give it a black-to-green colourmap
 
 
-
-<<<<<<< HEAD
-
-=======
->>>>>>> 271378aca4621aab89ca1207b547a1222987f07f
 # 3.2a Local Average
 calcLocalAverage <- function(img,KS) {
   
   # prepare empty output
   out <- brick()
-<<<<<<< HEAD
-  
-  ####### YOUR CODE HERE #######
-  
-  # Hints:
-  # - Calculating a local average is a moving window operation,
-  #   also known as a "focal" operation. Try to find out how to
-  #   do this in R by searching the Internet.
-  # - Remember that we have five bands (R-G-B-NIR-NDVI); it thus
-  #   makes sense to calculate local averages for all of them.
-  # - In this exercise we will use a KS x KS moving window.
-  # - What happens at the corners and borders of the image?
-  #   Check the documentation to find out how to address these
-  #   special cases.
-  
-  out <- ...
-  ##############################
-  
-=======
+
   ndims = dim(img)[3]
   
   for(i in 1:ndims){
     avg <- focal(x=img[[i]], w=matrix(1,nrow =KS, ncol =KS), fun = mean, na.rm = TRUE, pad = TRUE)
     out <- stack(list(out, avg))
   }
->>>>>>> 271378aca4621aab89ca1207b547a1222987f07f
+  
   # assign names
   names(out) <- sprintf("locAvg_%s_%s",KS,names(img))
   
@@ -184,11 +153,6 @@ locAvg_im1 <- calcLocalAverage(im1,KS)
 im1 <- stack(c(im1,locAvg_im1))
 locAvg_im2 <- calcLocalAverage(im2,KS)
 im2 <- stack(c(im2,locAvg_im2))
-
-
-
-
-
 
 
 
@@ -211,25 +175,29 @@ im2 <- stack(c(im2,locAvg_im2))
 
 calcLocalStandardDeviation <- function(img,KS) {
   
-  ####### YOUR CODE HERE #######
-  localSd <- ...
-  ##############################
+  mean1 = mean(img[[1:5]]^2); mean2 = mean(img[[1:5]])^2
+  Var = (KS/(KS-1))*(mean1-mean2)
+  
+
+  localSd <- sqrt(Var)
+
   
   # remove potential NaN values
   localSd[is.na(localSd)] = 0
   
   # assign names
-  names(localSd) <- sprintf("locStd_%s_%s",KS,names(img))
+  names(localSd) <- sprintf("locStd_%s_%s",KS,names(img[[1:5]]))
   
   return(localSd)
 }
 
 
 # now apply the function, like above
-
-####### YOUR CODE HERE #######
-...
-##############################
+# calculate local sd per image and append
+locAvg_im1 <- calcLocalStandardDeviation(im1,KS)
+im1 <- stack(c(im1,locAvg_im1))
+locAvg_im2 <- calcLocalAverage(im2,KS)
+im2 <- stack(c(im2,locAvg_im2))
 
 
 
