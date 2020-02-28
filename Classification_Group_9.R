@@ -175,13 +175,11 @@ im2 <- stack(c(im2,locAvg_im2))
 
 calcLocalStandardDeviation <- function(img,KS) {
   
-  mean1 = mean(img[[1:5]]^2); mean2 = mean(img[[1:5]])^2
+  mean1 = calcLocalAverage(img[[1:5]]^2, KS); mean2=calcLocalAverage(img[[1:5]], KS)^2
   Var = (KS/(KS-1))*(mean1-mean2)
   
-
   localSd <- sqrt(Var)
 
-  
   # remove potential NaN values
   localSd[is.na(localSd)] = 0
   
@@ -194,10 +192,10 @@ calcLocalStandardDeviation <- function(img,KS) {
 
 # now apply the function, like above
 # calculate local sd per image and append
-locAvg_im1 <- calcLocalStandardDeviation(im1,KS)
-im1 <- stack(c(im1,locAvg_im1))
-locAvg_im2 <- calcLocalAverage(im2,KS)
-im2 <- stack(c(im2,locAvg_im2))
+locSd_im1 <- calcLocalStandardDeviation(im1,KS)
+im1 <- stack(c(im1,locSd_im1))
+locSd_im2 <- calcLocalAverage(im2,KS)
+im2 <- stack(c(im2,locSd_im2))
 
 
 
@@ -260,7 +258,11 @@ normalise <- function(img,means,stdDevs) {
 
 # Hint: remember which statistics to use for which image.
 # Refer to the PDF for details.
-... <- normalise(...)
+
+mean_train = calcLocalAverage(im1,KS)
+sd_train = calcLocalStandardDeviation(im1,KS)
+im1_norm <- normalise(im1,mean_train,sd_train)
+im2_norm <- normalise(im2, mean_train, sd_train)
 ##############################
 
 
