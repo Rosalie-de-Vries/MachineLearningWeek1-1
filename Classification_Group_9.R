@@ -28,7 +28,7 @@ library(caret)                # collection of various machine learning tools. We
 
 
 # set working directory (MODIFY THE PATH FOR YOUR CASE ACCORDINGLY)
-setwd('M:/My Documents/R/FTE_ML_ex_Classification')
+setwd('C:/Users/devri/Documents/WUR/Machine Learning/Week1/GIT/R')
 
 
 
@@ -106,9 +106,7 @@ plot(gt1,col=classColors[1:(max(unique(gt1))+1)],main="Ground Truth",axes=FALSE)
 
 # 3.1 NDVI
 calcNDVI <- function(img) {
-  ####### YOUR CODE HERE #######
-  ndvi <- ...
-  ##############################
+  ndvi <- (img$NIR - img$R)/(img$NIR + img$R)
   names(ndvi) <- "ndvi"       # assign standardised name to RasterLayer object
   return(ndvi)
 }
@@ -126,29 +124,17 @@ plot(ndvi1,axes=FALSE,col=colorRampPalette(c("#20442C", "#D6FFD3"))(255))   # we
 
 
 
-
 # 3.2a Local Average
 calcLocalAverage <- function(img,KS) {
   
   # prepare empty output
   out <- brick()
+  ndims = dim(img)[3]
   
-  ####### YOUR CODE HERE #######
-  
-  # Hints:
-  # - Calculating a local average is a moving window operation,
-  #   also known as a "focal" operation. Try to find out how to
-  #   do this in R by searching the Internet.
-  # - Remember that we have five bands (R-G-B-NIR-NDVI); it thus
-  #   makes sense to calculate local averages for all of them.
-  # - In this exercise we will use a KS x KS moving window.
-  # - What happens at the corners and borders of the image?
-  #   Check the documentation to find out how to address these
-  #   special cases.
-  
-  out <- ...
-  ##############################
-  
+  for(i in 1:ndims){
+    avg <- focal(x=img[[i]], w=matrix(1,nrow =KS, ncol =KS), fun = mean, na.rm = TRUE, pad = TRUE)
+    out <- stack(list(out, avg))
+  }
   # assign names
   names(out) <- sprintf("locAvg_%s_%s",KS,names(img))
   
