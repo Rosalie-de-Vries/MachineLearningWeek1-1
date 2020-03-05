@@ -51,7 +51,7 @@ cluCentroids <- as.matrix(Data2D_scaled[init_indeces, ])
 ################################
 # R2
 # YOUR CODE HERE
-D <- distmat(as.matrix(Data2D_scaled), as.matrix(cluCentroids)) #distance matrix. Use distmat()
+D <- distmat(as.matrix(Data2D_scaled), cluCentroids) #distance matrix. Use distmat()
 assigned_clusterIDs <- apply(D, 1, which.min) #? for each data point, find the index of nearest cluster
 ################################
 
@@ -64,7 +64,7 @@ points(cluCentroids[,1], cluCentroids[,2], col = palette(),pch=19,cex=2)
 # R3
 # YOUR CODE HERE
 for (i in 1:K) {
-  cluCentroids[i,] <- mean(assigned_clusterIDs) #? upadte the centroids as the average of the assigned data points
+  cluCentroids[i,] <- colMeans(Data2D_scaled[assigned_clusterIDs==i,])
 }
 ################################
 
@@ -73,14 +73,14 @@ for (i in 1:K) {
 # R3
 # YOUR CODE HERE
 # Using R's native kmeans
-clustering <- #? get the clustering with kmeans()
-assigned_clusterIDs <- #?
-cluCentroids <- #?
+clustering <- kmeans(Data2D_scaled, K, iter.max=15)
+assigned_clusterIDs <- clustering$cluster
+cluCentroids <- clustering$centers
 # Using your kmeans implementation
 source('my_kmeans.R')
-my_clustering <- #? get the clustering with kmeans()
-my_assigned_clusterIDs <- #?
-my_cluCentroids <- #?
+my_clustering <- my_kmeans(Data2D_scaled, do_plot = TRUE)
+my_assigned_clusterIDs <- my_clustering$cluster
+my_cluCentroids <- my_clustering$centers
 ################################
 
 # Plot the clustering results of both algorithms
