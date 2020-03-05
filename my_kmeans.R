@@ -8,11 +8,11 @@ my_kmeans <- function(x,K=4,maxiter=15,do_plot=FALSE)
   # R4
   # YOUR CODE HERE
   # initialize
-  indeces <- #?
-  cluCentroids <- #?
-  D <- #?
-  assigned_clusterIDs <- #?
-  
+  indeces <- sample(1:nrow(x), K, replace = T)
+  cluCentroids <- as.matrix(x[indeces, ])
+  D <- distmat(as.matrix(x), cluCentroids)
+  assigned_clusterIDs <- apply(D, 1, which.min)
+    
   if (do_plot) {
     plot(x[,1], x[,2], col = palette()[assigned_clusterIDs])
     points(cluCentroids[,1], cluCentroids[,2], col = palette(),pch=19,cex=2)
@@ -26,7 +26,7 @@ my_kmeans <- function(x,K=4,maxiter=15,do_plot=FALSE)
     D <- #?
     assigned_clusterIDs <- #?
     for (k in 1:K) {
-      cluCentroids[k,] <- #?
+      cluCentroids[k,] <- colMeans(Data2D_scaled[assigned_clusterIDs==i,])
     }
     ################################
     if (do_plot) {
