@@ -1,4 +1,4 @@
-my_kmeans <- function(x,K=4,maxiter=15,do_plot=FALSE)
+my_kmeans <- function(x,K=4,maxiter=15,do_plot=TRUE)
 {
   # import packages
   library(pracma) # Practical Math operations, like distmat to compute a distance matrix
@@ -13,20 +13,20 @@ my_kmeans <- function(x,K=4,maxiter=15,do_plot=FALSE)
   D <- distmat(as.matrix(x), cluCentroids)
   assigned_clusterIDs <- apply(D, 1, which.min)
     
-  if (do_plot) {
+  #if (do_plot=TRUE) {
     plot(x[,1], x[,2], col = palette()[assigned_clusterIDs])
     points(cluCentroids[,1], cluCentroids[,2], col = palette(),pch=19,cex=2)
     Sys.sleep(0.5)
     print(0)
-  }
+  #}
   
   for (i in 1:maxiter) {
-    
-    
-    D <- #?
-    assigned_clusterIDs <- #?
+
+          
+    D <- distmat(as.matrix(x), cluCentroids)
+    assigned_clusterIDs <- apply(D, 1, which.min)
     for (k in 1:K) {
-      cluCentroids[k,] <- colMeans(Data2D_scaled[assigned_clusterIDs==i,])
+      cluCentroids[k,] <- colMeans(Data2D_scaled[assigned_clusterIDs==k,])
     }
     ################################
     if (do_plot) {
