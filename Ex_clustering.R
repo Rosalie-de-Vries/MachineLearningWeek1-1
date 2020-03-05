@@ -84,11 +84,11 @@ my_cluCentroids <- my_clustering$centers
 ################################
 
 # Plot the clustering results of both algorithms
-par(mfrow=c(1, 1))
-plot(Data2D[,1], Data2D[,2], col = palette()[assigned_clusterIDs])
+par(mfrow=c(1, 2))
+plot(Data2D_scaled[,1], Data2D_scaled[,2], col = palette()[assigned_clusterIDs])
 points(cluCentroids[,1], cluCentroids[,2], col = palette(),pch=19,cex=2)
 
-plot(Data2D[,1], Data2D[,2], col = palette()[my_assigned_clusterIDs])
+plot(Data2D_scaled[,1], Data2D_scaled[,2], col = palette()[my_assigned_clusterIDs])
 points(my_cluCentroids[,1], my_cluCentroids[,2], col = palette(),pch=19,cex=2)
 
 # --------------------------------------------------------------------------------------------
@@ -101,6 +101,7 @@ rm(list=ls())
 # import packages
 # install.packages("xlsx")
 require(xlsx)
+library(xlsx)
 
 # load the 8D data into a data frame
 AllDataCities <- read.xlsx("oecd_cities_stats.xlsx", sheetName = "OECD.Stat export")
