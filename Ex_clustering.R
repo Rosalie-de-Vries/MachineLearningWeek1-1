@@ -38,8 +38,8 @@ K <- 4 #Number of clusters
 ################################
 # R1
 # YOUR CODE HERE
-init_indeces <- #?
-cluCentroids <- #?
+init_indeces <- 1:nrow(Data2D)
+cluCentroids <- sample(init_indeces, replace = T)
 ################################
 
 # 1.2 Assign each data point to the nearest cluster centroid
