@@ -38,8 +38,9 @@ K <- 4 #Number of clusters
 ################################
 # R1
 # YOUR CODE HERE
-init_indeces <- 1:nrow(Data2D)
-cluCentroids <- sample(init_indeces, replace = T)
+Data2D_scaled <- scale(Data2D)
+init_indeces <- sample(1:nrow(Data2D_scaled), 4, replace = T)
+cluCentroids <- as.matrix(Data2D_scaled[init_indeces, ])
 ################################
 
 # 1.2 Assign each data point to the nearest cluster centroid
@@ -50,12 +51,12 @@ cluCentroids <- sample(init_indeces, replace = T)
 ################################
 # R2
 # YOUR CODE HERE
-D <- #? distance matrix. Use distmat()
-assigned_clusterIDs <- #? for each data point, find the index of nearest cluster
+D <- distmat(as.matrix(Data2D_scaled), as.matrix(cluCentroids)) #distance matrix. Use distmat()
+assigned_clusterIDs <- apply(D, 1, which.min) #? for each data point, find the index of nearest cluster
 ################################
 
 # this plot allows to see the cluster assignment
-plot(Data2D[,1], Data2D[,2], col = palette()[assigned_clusterIDs])
+plot(Data2D_scaled[,1], Data2D_scaled[,2], col = palette()[assigned_clusterIDs])
 points(cluCentroids[,1], cluCentroids[,2], col = palette(),pch=19,cex=2)
 
 # 1.3: Update the centroids
@@ -63,7 +64,7 @@ points(cluCentroids[,1], cluCentroids[,2], col = palette(),pch=19,cex=2)
 # R3
 # YOUR CODE HERE
 for (i in 1:K) {
-  cluCentroids[i,] <- #? upadte the centroids as the average of the assigned data points
+  cluCentroids[i,] <- mean(assigned_clusterIDs) #? upadte the centroids as the average of the assigned data points
 }
 ################################
 
