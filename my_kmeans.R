@@ -1,6 +1,7 @@
 my_kmeans <- function(x,K=4,maxiter=15,do_plot=TRUE)
 {
   # import packages
+  if (!require('pracma')) install.packages('pracma')
   library(pracma) # Practical Math operations, like distmat to compute a distance matrix
   
   # Code your k-means

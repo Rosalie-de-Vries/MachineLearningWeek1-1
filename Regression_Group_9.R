@@ -82,7 +82,7 @@ rsq_test
 
 ###normalize data###
 data_norm <- data
-data_norm[,4:65] <- data_norm[,4:65]/max(data_norm[,57])  # 57 is the 54th band
+data_norm[,4:65] <- data_norm[,4:65]/data_norm[,57]  # 57 is the 54th band
 #data_norm[,4:65] <- (data_norm[,4:65]) / (data_norm[,57])
 
 ###Show spectral values after normalization###
@@ -156,7 +156,7 @@ best_k <- -1
 train_70samples <- train_samples_norm [1:70,]
 test_70samples <- train_samples_norm [71:115,]
 
-for (k in seq(1, 60, by=1)){
+for (k in seq(3, 20, by=1)){
   knn <- knn.reg(train_70samples[,2:62], test_70samples[,2:62], y = train_70samples[,1],  k)
   pred_test = knn$pred
   res <- test_70samples[,1] - pred_test
@@ -173,15 +173,15 @@ for (k in seq(1, 60, by=1)){
 # Higher K might deteriorate the flexibility of the model.
 
 ###Apply KNN with the best number of neighbors###
-knn <- knn.reg(train = train_samples_norm, test = test_samples_norm, y = train_samples_norm[,1],  k = 37)
+knn <- knn.reg(train = train_samples_norm, test = test_samples_norm, y = train_samples_norm[,1],  k = 12)
 pred_test_knn = knn$pred
 
 ###Show the scatter plot###
 knn_scatter <- data.frame(rownames(test_samples), test_samples[,1], unname(pred_test_knn), "KNN")
 colnames(knn_scatter) <- c("Sample_id", "GT", "Pred", "Method")
-knn_scatter2 <- data.frame(rownames(test_samples_norm), test_samples_norm[,1], unname(pred_test_norm), "LM")
-colnames(knn_scatter2) <- c("Sample_id", "GT", "Pred", "Method")
-knn_scatter <- rbind(knn_scatter, knn_scatter2)
+lm_scatter <- data.frame(rownames(test_samples_norm), test_samples_norm[,1], unname(pred_test_norm), "LM")
+colnames(lm_scatter) <- c("Sample_id", "GT", "Pred", "Method")
+knn_scatter <- rbind(knn_scatter, lm_scatter)
 ggplot(data=knn_scatter, aes(x=GT, y=Pred, color=Method, shape=Method)) + geom_point() + geom_abline(slope=1, intercept = 0)
 
 

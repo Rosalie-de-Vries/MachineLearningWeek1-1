@@ -100,7 +100,7 @@ rm(list=ls())
 
 # import packages
 # install.packages("xlsx")
-require(xlsx)
+if (!require('xlsx')) install.packages('xlsx')
 library(xlsx)
 
 # load the 8D data into a data frame
@@ -141,23 +141,27 @@ legend(0.87, 0.8, as.vector(unique(RegionNames)),  fill=palette() )
 # R5
 # YOUR CODE HERE
 DataCities<-apply(DataCities,2,as.numeric)
-K<-4
-clustering <- #? get the clustering of the cities
+DataCities_scaled <- scale(DataCities)
+K<-3
+clustering <- kmeans(DataCities, K)
+clustering_scaled <- kmeans(DataCities_scaled, K)
 ################################
+
 
 # Plot the cluster centroids as barplots
 par(mfrow=c(2, ceiling(K/2)))
 for (i in 1:K) {
-  barplot(clustering$centers[i,]-colMeans(clustering$centers),names.arg=VarNames,las=2)
+  barplot(clustering_scaled$centers[i,]-colMeans(clustering_scaled$centers),names.arg=VarNames,las=2)
 }
 
 # 2.2: Check the regional proportions in each cluster
 ################################
 # R6
 # YOUR CODE HERE
+library("RColorBrewer")
 par(mfrow=c(2, ceiling(K/2)))
 for (i in 1:K) {
-  #? pie plot with the proportion of regions per cluster
+  pie(table(RegionNames[clustering_scaled$cluster==i]), col=brewer.pal(n=8, name="Pastel2"))
 }
 ################################
 
@@ -165,9 +169,9 @@ for (i in 1:K) {
 ################################
 # R7
 # YOUR CODE HERE
-pca<- #? PCA of DataCities
+pca<- prcomp(DataCities, scale = T)
 source('ggbiplot.R')
-#? use ggbiplot to visualize. Type ggbiplot to see the code and the options
+plottimg <- ggbiplot(pca, choices = c(2,3), groups = RegionNames, ellipse = TRUE) #? use ggbiplot to visualize. Type ggbiplot to see the code and the options
 
 ################################
 
