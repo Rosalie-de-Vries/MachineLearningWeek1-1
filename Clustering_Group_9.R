@@ -85,10 +85,10 @@ my_cluCentroids <- my_clustering$centers
 
 # Plot the clustering results of both algorithms
 par(mfrow=c(1, 2))
-plot(Data2D_scaled[,1], Data2D_scaled[,2], col = palette()[assigned_clusterIDs])
+plot(Data2D_scaled[,1], Data2D_scaled[,2], col = palette()[assigned_clusterIDs], main = "Using R native kmeans")
 points(cluCentroids[,1], cluCentroids[,2], col = palette(),pch=19,cex=2)
 
-plot(Data2D_scaled[,1], Data2D_scaled[,2], col = palette()[my_assigned_clusterIDs])
+plot(Data2D_scaled[,1], Data2D_scaled[,2], col = palette()[my_assigned_clusterIDs], main = "Using my kmeans implementation")
 points(my_cluCentroids[,1], my_cluCentroids[,2], col = palette(),pch=19,cex=2)
 
 # --------------------------------------------------------------------------------------------

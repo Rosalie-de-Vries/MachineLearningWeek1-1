@@ -76,14 +76,13 @@ rsq_test <- 1- (rss_test/tss_test)
 rsq_test
 
 # MAE gives equal weight to all errors, while RMSE gives extra weight to large errors
-# These values are RMSE: 5.858875, MAE: 4.825098, R2: 0.8243799. They are really low, and the R2 is high. 
+# These values are RMSE: 5.858875, MAE: 4.825098, R2: 0.8243799. RMSE and MAE are really low, and the R2 is high. 
 # These values indicate that relative to the training data, the model performs quite well. It is also shown in the F-statistic
 # and p-value 18.86 and 2.2e-16 respectively. 
 
 ###normalize data###
 data_norm <- data
 data_norm[,4:65] <- data_norm[,4:65]/data_norm[,57]  # 57 is the 54th band
-#data_norm[,4:65] <- (data_norm[,4:65]) / (data_norm[,57])
 
 ###Show spectral values after normalization###
 #graphics.off()
@@ -190,13 +189,13 @@ raster_img <- stack("./CHRIS.tif")
 
 maxs <- cellStats(raster_img, stat='max')
 par(mfrow=c(1,3))
-plotRGB(raster_img/maxs*255, r=3,g=13,b=23, main='Input image')
+plotRGB(raster_img/maxs*255, r=25,g=15,b=5, main='Input image')
 
 ###Apply lm###
 img <- as.data.frame(raster_img, xy=TRUE)
 colnames(img) <- c("x", "y", paste("Wavelength", wavelengths[1,4:ncol(wavelengths)], sep = "_"))
 #Normalize
-img[,3:64] <- (img[,3:64]) / max(img$Wavelength_879.54)
+img[,3:64] <- (img[,3:64]) / (img$Wavelength_879.54)
 
 img1 <- img[,-c(1:2)]
 colnames(img1) <-  colnames(train_samples_norm)[2:63]
@@ -214,12 +213,12 @@ plot(img_lm, axes=FALSE, main='Linear regression', asp=1)
 mat_img <- raster::as.matrix(raster_img)
 mat_img <- as.data.frame(raster_img, xy=TRUE)
 #Normalize
-mat_img[,] <- (img[,3:64]) / max(img$Wavelength_879.54)
+mat_img[,] <- (img[,3:64]) / (img$Wavelength_879.54)
 #Give meaningful names to the column
 colnames(mat_img) <- colnames(train_samples_norm)[2:62]
 
 #Apply KNN
-knn <- knn.reg(train = train_samples_norm[,2:63], test = mat_img[3:64], y = train_samples_norm[,1],  k = 41)
+knn <- knn.reg(train = train_samples_norm[,2:63], test = mat_img[3:64], y = train_samples_norm[,1],  k = 20)
 img_knn <- raster(matrix(unlist(knn$pred), nrow=dim(raster_img)[1], ncol=dim(raster_img)[2],byrow = TRUE))
 plot(img_knn, axes=FALSE, main='KNN regression')
 
