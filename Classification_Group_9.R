@@ -5,10 +5,8 @@
   # 2019 Laboratorium of Geo-Information Science and Remote Sensing (GRS)
   # Wageningen University
   # 
-  # Devis Tuia
-  # Diego Marcos
-  # Sylvain Lobry
-  # Benjamin Kellenberger
+  # Group 9
+  # Rosalie, Busra
   
   
   

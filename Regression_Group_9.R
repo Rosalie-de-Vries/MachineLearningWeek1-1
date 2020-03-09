@@ -1,3 +1,7 @@
+# --------------------------------------
+# Exercise: Regression_Group_9.R
+# --------------------------------------
+
 # Machine Learning 2020
 # Regression Project
 # 21/02/2020
@@ -168,7 +172,6 @@ for (k in seq(3, 20, by=1)){
 }
 
 # As a rule of thumb, setting K to the square root of the number of n can lead to better results.
-# Therefore we picked the range that would be suitable is 1:12
 # Higher K might deteriorate the flexibility of the model.
 
 ###Apply KNN with the best number of neighbors###

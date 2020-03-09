@@ -5,10 +5,8 @@
 # 2020 Laboratory of Geo-Information Science and Remote Sensing (GRS)
 # Wageningen University
 # 
-# Devis Tuia
-# Diego Marcos
-# Sylvain Lobry
-# Benjamin Kellenberger
+# Group 9
+# Rosalie, Busra
 
 # --------------------------------------------------------------------------------------------
 # Setup and data preparation for the 2D dataset
@@ -171,7 +169,7 @@ for (i in 1:K) {
 # YOUR CODE HERE
 pca<- prcomp(DataCities, scale = T)
 source('ggbiplot.R')
-plottimg <- ggbiplot(pca, choices = c(2,3), groups = RegionNames, ellipse = TRUE) #? use ggbiplot to visualize. Type ggbiplot to see the code and the options
+plottimg <- ggbiplot(pca, choices = c(2,3), groups = RegionNames, ellipse = TRUE) #use ggbiplot to visualize. Type ggbiplot to see the code and the options
 
 ################################
 
